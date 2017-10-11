@@ -13,7 +13,7 @@ pixel imagem[300][300];
 
 void filtro_negativo(pixel im[300][300], int alt, int larg, int max);
 
-int main(int argc, char** argv) {
+int main() {
     int alt, larg;
     char tipo[3];
     char coment[100];
