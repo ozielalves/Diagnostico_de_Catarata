@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    int r;
+    int g;
+    int b;
+} pixel;
+pixel imagem[300][300];
+void filtro_negativo(pixel im[300][300], int alt, int larg, int max){
+  int i, j;
+    for (i = 0; i < alt; i++) {
+        for (j = 0; j < larg; j++) {
+            im[i][j].r = max - im[i][j].r;
+            im[i][j].g = max - im[i][j].g;
+            im[i][j].b = max - im[i][j].b;
+        }
+    }
+}
+unsigned char** aloca(int m, int n)
+{
+    int i;
+    unsigned char **matriz;
+    matriz = (unsigned char**) malloc(n * sizeof(unsigned char*));
+    for(i = 0; i < n; i++)
+    {
+        matriz[i] = (unsigned char*) malloc(m * sizeof(unsigned char));
+    }
+    return matriz;
+}
+int main() {
+    int alt, larg;
+    char tipo[2];
+    char coment[100];
+    int max;
+    int i, j;
+    FILE *ptrimagem; 
+    FILE *ptrnovaimagem;
+    char nomeimagem[260];
+    char nomenovaimagem[260];
+    printf("Digite o nome do arquivo PPM de entrada: ");
+    scanf("%s", nomeimagem);
+    printf("Digite o nome do arquivo PGM de saida: ");
+    scanf("%s", nomenovaimagem);
+  
+    ptrimagem = fopen(nomeimagem , "r") ;
+    if(ptrimagem == NULL) // Verificase o arquivo existe e foi aberto
+    {
+        printf("Erro na abertura do arquivo %s\n", nomeimagem);
+        return 0;
+    }
+    fscanf(ptrimagem, "%s", tipo);
+    if(strcmp(tipo,"P3") != 0)
+    {
+        printf("Arquivo nao e um PPM\n") ;
+        fclose(ptrimagem) ;
+        return 0;
+    }
+    scanf("%s%d%d%d", tipo, &larg, &alt, &max);
+
+    for (i = 0; i < alt; i++) {
+        for (j = 0; j < larg; j++) {
+            scanf("%d%d%d", &imagem[i][j].r, &imagem[i][j].g, &imagem[i][j].b);
+        }
+    }
+
+    filtro_negativo(imagem, alt, larg, max);
+    ptrnovaimagem = fopen(nomenovaimagem , "w"); 
+    fprintf("%s\n", tipo);
+    fprintf("%d %d\n", larg, alt);
+    fprintf("%d\n", max);
+
+    for (i = 0; i < alt; i++) {
+        for (j = 0; j < larg; j++) {
+            fprintf("%d %d %d\n", 255 - imagem[i][j].r, 255 - imagem[i][j].g, 255 - imagem[i][j].b);
+        }
+    }
+    fclose(ptrimagem);
+    fclose(ptrnovaimagem);
+     for(i = 0; i < n; i++)
+    {
+     free(matrizcinza[i]);
+    }
+    free(matrizcinza);
+    return 0;
+}
+
+void filtro_negativo(pixel im[300][300], int alt, int larg, int max) {
+    int i, j;
+    for (i = 0; i < alt; i++) {
+        for (j = 0; j < larg; j++) {
+            im[i][j].r = max - im[i][j].r;
+            im[i][j].g = max - im[i][j].g;
+            im[i][j].b = max - im[i][j].b;
+        }
+    }
+}
