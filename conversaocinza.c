@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+int conversaocinza(unsigned char r, unsigned char g, unsigned char b)
+{
+    int formula;
+    formula = 0.3*r + 0.59*g + 0.11*b;
+    return formula;
+} 
 unsigned char** aloca(int m, int n)
 {
     int i;
-    unsigned char **M;
-    M = (unsigned char**) malloc(n * sizeof(unsigned char*));
+    unsigned char **matriz;
+    matriz = (unsigned char**) malloc(n * sizeof(unsigned char*));
     for(i = 0; i < n; i++)
     {
-        M[i] = (unsigned char*) malloc(m * sizeof(unsigned char));
+        matriz[i] = (unsigned char*) malloc(m * sizeof(unsigned char));
     }
-    return M;
+    return matriz;
 }
-int conversaocinza(unsigned char r, unsigned char g, unsigned char b)
-{
-    int new;
-    new = 0.3*r + 0.59*g + 0.11*b;
-    return new;
-} 
 int main()
 {
     FILE *ptrimagem; 
@@ -54,7 +54,7 @@ int main()
     unsigned char **matrizcinza;
     matrizcinza = aloca(m, n);
     /* Lê os canais de cores de cada pixel ij da imagem
-     e salva na matriz matrizcinza o seu correspondente
+     e salva na matrizcinza o seu correspondente
      em cinza*/
     for(i = 0; i < n; i++)
     {
@@ -64,9 +64,8 @@ int main()
             matrizcinza[i][j] = conversaocinza(red, green, blue);
         }
     }
-  
     ptrnovaimagem = fopen(nomenovaimagem , "w"); 
-    fprintf(ptrnovaimagem,"P5\n"); 
+    fprintf(ptrnovaimagem,"P2\n"); 
     fprintf(ptrnovaimagem, "%d %d\n %d\n", m, n, max); 
   
     for(i = 0; i < n; i++)
