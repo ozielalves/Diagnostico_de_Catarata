@@ -23,23 +23,14 @@ int combLinear(unsigned char r, unsigned char g, unsigned char b)
     int new;
     new = 0.3*r + 0.59*g + 0.11*b;
     return new;
-}
-  
-// Metodo da media
-int media(unsigned char r, unsigned char g, unsigned char b)
-{
-    int new;
-    new = (r + g + b) / 3;
-    return new;
-}
-  
+} 
 int main()
 {
     FILE *image; // Ponteiro para o arquivo que contem a imagem que vamos tratar
     FILE *newImage; // Ponteiro para o arquivo onde vamos salvar a imagem tratada
     char image_name[256];
     char newImage_name[256];
-    char key[128];
+    char key[2];
     unsigned char red, green, blue;
     int i, j, m, n, max;
   
@@ -59,7 +50,7 @@ int main()
     fscanf(image, "%s", key);
   
     // Verifica se a imagem esta em PPM
-    if(strcmp(key,"P6") != 0)
+    if(strcmp(key,"P3") != 0)
     {
         printf("Arquivo nao e um PPM\n") ;
         fclose(image) ;
