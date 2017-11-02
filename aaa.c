@@ -21,22 +21,24 @@ void criarMatrizPixeis(pont_imagem Imagem){
         Imagem->pix_imagem[i] = (pixel*)malloc(Imagem->colunas * sizeof(pixel));
     }
 }
-void lerImagem(pont_imagem Imagem){
+void lerimagem(pont_imagem Imagem){
     FILE *imagem;
     int i, j;
-    char nomeImagem[50];
+    char nomeimagem[250];
 
-    printf("Digite o nome da imagem a ser aberta: ");
-    scanf("%s", nomeImagem);
-
-    imagem = fopen(nomeImagem, "r");
-
+    printf("Digite o nome da imagem: ");
+    scanf("%s", nomeimagem);
+    imagem = fopen(nomeimagem, "r");
     if(imagem == NULL){
         printf("Houve um erro ao abrir a imagem\n");
         exit(1);
     }
     
     fscanf(imagem,"%s",Imagem->codigo);
+    if(strcmp(Imagem->codigo,"P3")!=0){
+        printf("Imagem nao eh PPM\n");
+        fclose(imagem);
+    }
     fscanf(imagem,"%i",&Imagem->colunas);
     fscanf(imagem,"%i",&Imagem->linhas);
     criarMatrizPixeis(Imagem);
@@ -53,14 +55,14 @@ void lerImagem(pont_imagem Imagem){
     fclose(imagem);
 }
   
-void salvarImagem(pont_imagem Imagem){
+void novaimagem(pont_imagem Imagem){
     FILE *imagem;
     int i, j;
-    char nome_imagem[100];
-    printf("Digite o caminho e nome da imagem a ser salva: ");
-    scanf("%s", nome_imagem);
+    char novonome[250];
+    printf("Digite o novo nome para imagem em cinza: ");
+    scanf("%s", novonome);
 
-    imagem = fopen(nome_imagem, "w");
+    imagem = fopen(novonome, "w");
 
     fprintf(imagem,"%s\n",Imagem->codigo);
     fprintf(imagem,"%i ",Imagem->colunas);
@@ -77,7 +79,7 @@ void salvarImagem(pont_imagem Imagem){
     fclose(imagem);
     free(Imagem->pix_imagem);
 } 
-void escalaCinza(pont_imagem Imagem){
+void transformarcinza(pont_imagem Imagem){
     int i, j;
     int combinacao;
     for(i = 0; i < Imagem->linhas; i++){
@@ -92,8 +94,8 @@ void escalaCinza(pont_imagem Imagem){
 int main()
 {   
     imagem Imagem;
-    lerImagem(&Imagem);
-    escalaCinza(&Imagem);
-    salvarImagem(&Imagem);
+    lerimagem(&Imagem);
+    transformarcinza(&Imagem);
+    novaimagem(&Imagem);
   return 0;
 }
