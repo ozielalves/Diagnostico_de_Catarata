@@ -1,87 +1,93 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int conversaocinza(unsigned char r, unsigned char g, unsigned char b)
-{
-    int formula;
-    formula = 0.3*r + 0.59*g + 0.11*b;
-    return formula;
-} 
-unsigned char** aloca(int m, int n)
-{
+
+typedef struct{
+    int r, g, b;
+}pixel;
+
+typedef struct{
+    pixel **pixelimagem;
+    char codigo[2];
+    int max, colunas, linhas;
+}imagem, *pont_imagem;
+
+void criarmatriz(pont_imagem Imagem){
     int i;
-    unsigned char **matriz;
-    matriz = (unsigned char**) malloc(n * sizeof(unsigned char*));
-    for(i = 0; i < n; i++)
-    {
-        matriz[i] = (unsigned char*) malloc(m * sizeof(unsigned char));
+    Imagem->pixelimagem = (pixel**)malloc(Imagem->linhas * sizeof(pixel*));
+    for(i=0; i<Imagem->linhas; i++){
+        Imagem->pixelimagem[i] = (pixel*)malloc(Imagem->colunas * sizeof(pixel));
     }
-    return matriz;
+}
+void lerimagem(pont_imagem Imagem){
+    FILE *imagem;
+    int i, j;
+    char nomeimagem[250];
+
+    printf("Digite o nome da imagem: ");
+    scanf("%s", nomeimagem);
+    imagem=fopen(nomeimagem, "r");
+    if(imagem == NULL){
+        printf("Houve um erro ao abrir a imagem\n");
+        exit(1);
+    }
+    fscanf(imagem,"%s",Imagem->codigo);
+    if(strcmp(Imagem->codigo,"P3")!=0){
+        printf("Imagem nao eh PPM\n");
+        fclose(imagem);
+    }
+    fscanf(imagem,"%i",&Imagem->colunas);
+    fscanf(imagem,"%i",&Imagem->linhas);
+    criarmatriz(Imagem);
+    fscanf(imagem,"%i",&Imagem->max);
+
+    for(i=0; i<Imagem->linhas; i++){
+        for(j=0; j<Imagem->colunas; j++){
+            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].r);
+            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].g);
+            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].b);
+        }
+    }
+    fclose(imagem);
+} 
+void novaimagem(pont_imagem Imagem){
+    FILE *imagem;
+    int i, j;
+    char novonome[250];
+    printf("Digite o novo nome para imagem em cinza: ");
+    scanf("%s", novonome);
+    imagem=fopen(novonome,"w");
+    fprintf(imagem,"%s\n",Imagem->codigo);
+    fprintf(imagem,"%i ",Imagem->colunas);
+    fprintf(imagem,"%i\n",Imagem->linhas);
+    fprintf(imagem,"%i\n",Imagem->max);
+    for(i=0; i<Imagem->linhas; i++){
+        for(j=0; j<Imagem->colunas; j++){
+            fprintf(imagem,"%i ",Imagem->pixelimagem[i][j].r);
+            fprintf(imagem,"%i ",Imagem->pixelimagem[i][j].g);
+            fprintf(imagem,"%i\n",Imagem->pixelimagem[i][j].b);
+        }
+    }
+    fclose(imagem);
+    free(Imagem->pixelimagem);
+} 
+void transformarcinza(pont_imagem Imagem){
+    int i, j;
+    int combinacao;
+    for(i=0; i<Imagem->linhas; i++){
+        for(j=0; j<Imagem->colunas; j++){
+            combinacao=(Imagem->pixelimagem[i][j].r*0.3 + Imagem->pixelimagem[i][j].g*0.59 + Imagem->pixelimagem[i][j].b*0.11);
+            Imagem->pixelimagem[i][j].r = combinacao;
+            Imagem->pixelimagem[i][j].g = combinacao;
+            Imagem->pixelimagem[i][j].b = combinacao;
+        }
+    }
 }
 int main()
-{
-    FILE *ptrimagem; 
-    FILE *ptrnovaimagem;
-    char nomeimagem[260];
-    char nomenovaimagem[260];
-    char key[2];
-    unsigned char red, green, blue;
-    int i, j, m, n, max;
-  
-    printf("Digite o nome do arquivo PPM de entrada: ");
-    scanf("%s", nomeimagem);
-    printf("Digite o nome do arquivo PGM de saida: ");
-    scanf("%s", nomenovaimagem);
-  
-    ptrimagem = fopen(nomeimagem , "r") ;
-    if(ptrimagem == NULL) // Verificase o arquivo existe e foi aberto
-    {
-        printf("Erro na abertura do arquivo %s\n", nomeimagem);
-        return 0 ;
-    }
-    fscanf(ptrimagem, "%s", key);
-    if(strcmp(key,"P3") != 0)
-    {
-        printf("Arquivo nao e um PPM\n") ;
-        fclose(ptrimagem) ;
-        return 0 ;
-    }
-    fscanf(ptrimagem, "%d %d %d", &m, &n, &max) ;
-    /* m guarda a largura da imagem (colunas da matriz)
-     n guarda a altura da imagem (linhas da matriz)
-    max guarda o valor máximo da escala
-    Matriz para guardar a imagem em tons de cinza*/
-    unsigned char **matrizcinza;
-    matrizcinza = aloca(m, n);
-    /* Lê os canais de cores de cada pixel ij da imagem
-     e salva na matrizcinza o seu correspondente
-     em cinza*/
-    for(i = 0; i < n; i++)
-    {
-        for(j = 0; j < m; j++)
-        {
-            fscanf(ptrimagem, "%c%c%c", &red, &green, &blue);
-            matrizcinza[i][j] = conversaocinza(red, green, blue);
-        }
-    }
-    ptrnovaimagem = fopen(nomenovaimagem , "w"); 
-    fprintf(ptrnovaimagem,"P2\n"); 
-    fprintf(ptrnovaimagem, "%d %d\n %d\n", m, n, max); 
-  
-    for(i = 0; i < n; i++)
-    {
-        for(j = 0; j < m; j++)
-        {
-            // Escreve os valores de cada pixel no arquivo
-            fprintf(ptrnovaimagem, "%c", (char) matrizcinza[i][j]);
-        }
-    }
-    fclose(ptrimagem);
-    fclose(ptrnovaimagem);
-    for(i = 0; i < n; i++)
-    {
-        free(matrizcinza[i]);
-    }
-    free(matrizcinza);
-    return 0;
+{   
+    imagem Imagem;
+    lerimagem(&Imagem);
+    transformarcinza(&Imagem);
+    novaimagem(&Imagem);
+  return 0;
 }
