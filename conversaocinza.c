@@ -20,7 +20,7 @@ void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem receben
     }
 }
 void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
-    FILE *imagem;
+    FILE *imagem;// ponteiro que aponta pro arquivo
     int i, j;
     char nomeimagem[250];
 
@@ -32,7 +32,7 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
         exit(1);
     }
     fscanf(imagem,"%s",Imagem->codigo);
-    if(strcmp(Imagem->codigo,"P3")!=0){ // Verifica se é PPM
+    if(strcmp(Imagem->codigo,"P3")!=0){ // Verifica se é PPM(incompleto)
         printf("Imagem nao eh PPM\n");
         fclose(imagem);
     }
@@ -43,7 +43,7 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
 
     for(i=0; i<Imagem->altura; i++){
         for(j=0; j<Imagem->largura; j++){
-            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].r);/*aqui se lê todos os pixels da imagem e armazena*/
+            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].r);/*aqui se lê todos os pixels da imagem e armazena em r=red, g=gree,b=blue*/
             fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].g);
             fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].b);
         }
