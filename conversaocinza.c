@@ -7,76 +7,76 @@ typedef struct{
 }pixel;
 
 typedef struct{
-    pixel **pixelimagem;
+    pixel **pixelimagem;//ponteiro que aponta para os pixels da imagem
     char codigo[2];
-    int max, colunas, linhas;
-}imagem, *pont_imagem;
+    int max, largura, altura;
+}imagem, *pont_imagem;//ponteiro que aponta para imagem
 
-void criarmatriz(pont_imagem Imagem){
+void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem recebendo a altura e largura da imagem original*/
     int i;
-    Imagem->pixelimagem = (pixel**)malloc(Imagem->linhas * sizeof(pixel*));
-    for(i=0; i<Imagem->linhas; i++){
-        Imagem->pixelimagem[i] = (pixel*)malloc(Imagem->colunas * sizeof(pixel));
+    Imagem->pixelimagem = (pixel**)malloc(Imagem->altura * sizeof(pixel*));
+    for(i=0; i<Imagem->altura; i++){
+        Imagem->pixelimagem[i] = (pixel*)malloc(Imagem->largura * sizeof(pixel));
     }
 }
-void lerimagem(pont_imagem Imagem){
+void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
     FILE *imagem;
     int i, j;
     char nomeimagem[250];
 
     printf("Digite o nome da imagem: ");
     scanf("%s", nomeimagem);
-    imagem=fopen(nomeimagem, "r");
+    imagem=fopen(nomeimagem, "r");// abre em modo leitura
     if(imagem == NULL){
         printf("Houve um erro ao abrir a imagem\n");
         exit(1);
     }
     fscanf(imagem,"%s",Imagem->codigo);
-    if(strcmp(Imagem->codigo,"P3")!=0){
+    if(strcmp(Imagem->codigo,"P3")!=0){ // Verifica se é PPM
         printf("Imagem nao eh PPM\n");
         fclose(imagem);
     }
-    fscanf(imagem,"%i",&Imagem->colunas);
-    fscanf(imagem,"%i",&Imagem->linhas);
+    fscanf(imagem,"%i",&Imagem->largura);// Largura da imagem
+    fscanf(imagem,"%i",&Imagem->altura);// Altura da imagem
     criarmatriz(Imagem);
     fscanf(imagem,"%i",&Imagem->max);
 
-    for(i=0; i<Imagem->linhas; i++){
-        for(j=0; j<Imagem->colunas; j++){
-            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].r);
+    for(i=0; i<Imagem->altura; i++){
+        for(j=0; j<Imagem->largura; j++){
+            fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].r);/*aqui se lê todos os pixels da imagem e armazena*/
             fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].g);
             fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].b);
         }
     }
     fclose(imagem);
 } 
-void novaimagem(pont_imagem Imagem){
+void novaimagem(pont_imagem Imagem){/*Função para criar a imagem em tons de cinza*/
     FILE *imagem;
     int i, j;
     char novonome[250];
     printf("Digite o novo nome para imagem em cinza: ");
     scanf("%s", novonome);
-    imagem=fopen(novonome,"w");
-    fprintf(imagem,"%s\n",Imagem->codigo);
-    fprintf(imagem,"%i ",Imagem->colunas);
-    fprintf(imagem,"%i\n",Imagem->linhas);
+    imagem=fopen(novonome,"w");// abre em modo escrita
+    fprintf(imagem,"%s\n",Imagem->codigo);/*escreve o cabeçalho da imagem*/
+    fprintf(imagem,"%i ",Imagem->largura);
+    fprintf(imagem,"%i\n",Imagem->altura);
     fprintf(imagem,"%i\n",Imagem->max);
-    for(i=0; i<Imagem->linhas; i++){
-        for(j=0; j<Imagem->colunas; j++){
-            fprintf(imagem,"%i ",Imagem->pixelimagem[i][j].r);
+    for(i=0; i<Imagem->altura; i++){
+        for(j=0; j<Imagem->largura; j++){
+            fprintf(imagem,"%i ",Imagem->pixelimagem[i][j].r);/*Escreve os novos pixels, ja alterados na conversão*/
             fprintf(imagem,"%i ",Imagem->pixelimagem[i][j].g);
             fprintf(imagem,"%i\n",Imagem->pixelimagem[i][j].b);
         }
     }
     fclose(imagem);
-    free(Imagem->pixelimagem);
+    free(Imagem->pixelimagem);//libera o espaço
 } 
 void transformarcinza(pont_imagem Imagem){
     int i, j;
     int combinacao;
-    for(i=0; i<Imagem->linhas; i++){
-        for(j=0; j<Imagem->colunas; j++){
-            combinacao=(Imagem->pixelimagem[i][j].r*0.3 + Imagem->pixelimagem[i][j].g*0.59 + Imagem->pixelimagem[i][j].b*0.11);
+    for(i=0; i<Imagem->altura; i++){
+        for(j=0; j<Imagem->largura; j++){
+            combinacao=(Imagem->pixelimagem[i][j].r*0.3 + Imagem->pixelimagem[i][j].g*0.59 + Imagem->pixelimagem[i][j].b*0.11);/*Formula para conversao de cinza dada no pdf*/
             Imagem->pixelimagem[i][j].r = combinacao;
             Imagem->pixelimagem[i][j].g = combinacao;
             Imagem->pixelimagem[i][j].b = combinacao;
