@@ -32,9 +32,9 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
         exit(1);
     }
     fscanf(imagem,"%s",Imagem->codigo);
-    if(strcmp(Imagem->codigo,"P3")!=0){ // Verifica se é PPM(incompleto)
+    if(strcmp(Imagem->codigo,"P3")!=0){ // Verifica se é PPM
         printf("Imagem nao eh PPM\n");
-        fclose(imagem);
+        exit(1);
     }
     fscanf(imagem,"%i",&Imagem->largura);// Largura da imagem
     fscanf(imagem,"%i",&Imagem->altura);// Altura da imagem
