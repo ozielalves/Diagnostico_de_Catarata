@@ -19,6 +19,28 @@ void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem receben
         Imagem->pixelimagem[i] = (pixel*)malloc(Imagem->largura * sizeof(pixel));
     }
 }
+void filtrogaussiano(pont_imagem Imagem){
+
+	int i, j, k, l;
+	int filtro;
+	int gauss[5][5] = {{ 2,  4,  5,  4, 2 },{ 4,  9, 12,  9, 4 },{ 5, 12, 15, 12, 5 },{ 4,  9, 12,  9, 4 },{ 2,  4,  5,  4, 2 }};
+	for(i = 0; i < Imagem->largura; i++){
+		for(j = 0; j < Imagem->altura; j++){
+			filtro = 0;
+			for(k = 0; k < 5; k++){
+				for(l = 0; l < 5; l++){
+			       if ( ((i-2+k) >= 0 && (j-2+l) >= 0) && (i+2+k < Imagem->largura && j+2+k < Imagem->altura) ) {
+						filtro += Imagem->pixelimagem[i-2+k][j-2+l].r * gauss[k][l]/159;
+					
+					}
+				}
+			}
+			Imagem->pixelimagem[i][j].r = filtro;
+			Imagem->pixelimagem[i][j].g = filtro;
+			Imagem->pixelimagem[i][j].b = filtro;
+		}
+	}
+}
 void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
     FILE *imagem;// ponteiro que aponta pro arquivo
     int i, j;
@@ -88,6 +110,7 @@ int main()
     imagem Imagem;
     lerimagem(&Imagem);
     transformarcinza(&Imagem);
+    filtrogaussiano(&Imagem);
     novaimagem(&Imagem);
   return 0;
 }
