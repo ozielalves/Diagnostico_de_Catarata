@@ -20,10 +20,9 @@ void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem receben
     }
 }
 void filtrosobel(pont_imagem Imagem){
+	int x=0, y=0, sobel,auxx,auxy,i, j, k, l;
 	int sobely[3][3] = {{ -1, 0, 1},{ -2, 0, 2},{-1,0,1}};
 	int sobelx[3][3] = {{1, 2, 1},{0, 0, 0},{-1, -2, -1}};
-	int x=0, y=0, sobel,auxx,auxy;
-	int i, j, k, l;
 	for(i=1; i<Imagem->altura-1; i++){				/*Aqui deve-se retirar as bordas da imagem para nao existir indices negativos*/
 		for(j=1; j<Imagem->largura-1; j++){
 			x=0;
