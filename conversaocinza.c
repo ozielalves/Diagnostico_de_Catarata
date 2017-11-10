@@ -20,8 +20,7 @@ void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem receben
     }
 }
 void filtrogaussiano(pont_imagem Imagem){
-	int i, j, k, l;
-	int aux;
+	int i, j, k, l,aux;
 	int filtro[5][5] = {{ 2,  4,  5,  4, 2 },{ 4,  9, 12,  9, 4 },{ 5, 12, 15, 12, 5 },{ 4,  9, 12,  9, 4 },{ 2,  4,  5,  4, 2 }};
 	for(i = 0; i < Imagem->altura; i++){
 		for(j = 0; j < Imagem->largura; j++){
@@ -92,8 +91,7 @@ void novaimagem(pont_imagem Imagem){/*Função para criar a imagem em tons de ci
     free(Imagem->pixelimagem);//libera o espaço
 } 
 void transformarcinza(pont_imagem Imagem){
-    int i, j;
-    int combinacao;
+    int i, j,combinacao;
     for(i=0; i<Imagem->altura; i++){
         for(j=0; j<Imagem->largura; j++){
             combinacao=(Imagem->pixelimagem[i][j].r*0.3 + Imagem->pixelimagem[i][j].g*0.59 + Imagem->pixelimagem[i][j].b*0.11);/*Formula para conversao de cinza dada no pdf*/
