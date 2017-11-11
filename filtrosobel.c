@@ -70,25 +70,53 @@ void filtrogaussiano(pont_imagem Imagem){
 void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
     FILE *imagem;// ponteiro que aponta pro arquivo
     int i, j;
-    char nomeimagem[250];
-
+    char nomeimagem[250],aux[100];
+    char temp[100],temp1[5],temp2[5];
     printf("Digite o nome da imagem: ");
     scanf("%s", nomeimagem);
     imagem=fopen(nomeimagem, "r");// abre em modo leitura
-    if(imagem == NULL){
-        printf("Houve um erro ao abrir a imagem\n");
-        exit(1);
-    }
-    fscanf(imagem,"%s",Imagem->codigo);
-    if(strcmp(Imagem->codigo,"P3")!=0){ // Verifica se é PPM
-        printf("Imagem nao eh PPM\n");
-        exit(1);
-    }
-    fscanf(imagem,"%i",&Imagem->largura);// Largura da imagem
-    fscanf(imagem,"%i",&Imagem->altura);// Altura da imagem
-    criarmatriz(Imagem);
-    fscanf(imagem,"%i",&Imagem->max);
+        if(imagem == NULL){
+            printf("Houve um erro ao abrir a imagem\n");
+            exit(1);
+        }
 
+    while(1){
+    fgets(temp,99,imagem);
+        if(temp[0]=='#'){
+        	strcpy(aux,temp);
+        }else {
+            break;
+        }
+      if(strcmp(temp,"P3")!=0){ // Verifica se é PPM(incompleto)
+            printf("Imagem nao eh PPM\n");
+            exit(1);
+        }
+    }
+    strcpy(Imagem->codigo,temp);
+
+    while(1){
+    fgets(temp,99,imagem);
+        if(temp[0]=='#'){
+        	strcpy(aux,temp);
+        }else{
+            break;
+        }
+    }
+    sscanf(temp,"%s %s",temp1,temp2);
+    Imagem->largura=atoi(temp1);
+    Imagem->altura=atoi(temp2);
+    printf("%i\n",Imagem->largura);
+    printf("%i\n",Imagem->altura);
+    criarmatriz(Imagem);
+    while(1){
+    fgets(temp,99,imagem);
+        if(temp[0]=='#'){
+            continue;
+        }else{
+            break;
+        }
+    }
+    Imagem->max=atoi(temp);
     for(i=0; i<Imagem->altura; i++){
         for(j=0; j<Imagem->largura; j++){
             fscanf(imagem,"%i",&Imagem->pixelimagem[i][j].r);/*aqui se lê todos os pixels da imagem e armazena em r=red, g=gree,b=blue*/
