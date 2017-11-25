@@ -110,17 +110,23 @@ pont_imagem segmentacao(pont_imagem Imagem, centro *c){
     Imagemsegmentada->largura = Imagem->largura;
     Imagemsegmentada->max = Imagem->max;
     criarmatriz(Imagemsegmentada);
-    int tamanhoraio;
-    if(Imagemsegmentada->altura==1015){
-        tamanhoraio=-100;
+    int i,j,raioimagem;
+    if(Imagemsegmentada->largura == 1167){
+        raioimagem=20;
     }
-    else if(Imagemsegmentada->altura==1167){
-        tamanhoraio=10;
+    else if (Imagemsegmentada->largura==1015){
+        raioimagem=-100;
     }
-    int i,j;
+   else if(Imagemsegmentada->largura == 610){
+    raioimagem=-20;
+   }
+   else if(Imagemsegmentada->largura == 1198){
+    raioimagem=-5;
+   }
+   printf("%i\n",raioimagem);
     for(i = 0; i < Imagem->altura; i++){
         for(j = 0; j < Imagem->largura; j++){
-        if(sqrt((i-c->y)*(i-c->y)+(j-c->x)*(j-c->x)) < c->r+tamanhoraio){ // ajuste manual do raio... ???
+        if(sqrt((i-c->y)*(i-c->y)+(j-c->x)*(j-c->x)) < c->r+raioimagem){ // ajuste manual do raio... ???
             Imagemsegmentada->pixelimagem[i][j].r = Imagem->pixelimagem[i][j].r;
             Imagemsegmentada->pixelimagem[i][j].g = Imagem->pixelimagem[i][j].g;
             Imagemsegmentada->pixelimagem[i][j].b = Imagem->pixelimagem[i][j].b;
@@ -171,20 +177,26 @@ pont_imagem filtrosobel(pont_imagem Imagem){
     return Imagemsobel;
 }
 pont_imagem binarizacao(pont_imagem Imagem){
-    int  i,j;
+    int  i,j,threshold;
     pont_imagem Imagembin = calloc(1,sizeof(imagem));
     strcpy(Imagembin->codigo,Imagem->codigo);
     Imagembin->altura = Imagem->altura;
     Imagembin->largura = Imagem->largura;
     Imagembin->max=Imagem->max;
-    criarmatriz(Imagembin);
-     int threshold;
-    if(Imagembin->altura == 1015){
-        threshold=35;
-    }
-    else if(Imagembin->altura == 1167){
+    if(Imagembin->largura == 1167){
         threshold=25;
     }
+    else if (Imagembin->largura==1015){
+        threshold=35;
+    }
+    else if(Imagembin->largura == 610){
+        threshold=50;
+    }
+    else if(Imagembin->largura == 1198){
+        threshold=21;
+    }
+    printf("%i\n",threshold );
+    criarmatriz(Imagembin);
     for(i = 0; i < Imagem->altura; i++){
         for(j = 0; j < Imagem->largura; j++){
             if(Imagem->pixelimagem[i][j].r > threshold){
