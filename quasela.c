@@ -50,8 +50,8 @@ centro *hough(pont_imagem Imagem){
                 for(k = raiominimopupila; k <= raiomaximopupila; k++){ // k= area dos pixels da pupila
                     dim = (k-raiominimopupila)*largura*altura; // convesao de espaço tridimensional para um vetor unidimensional(por causa da formula)
                     for(t = 0; t < 360; t++){
-                        y = i + k * sin(PI/180.0*t); // formula do pdf errada? com o i- k*senos[t] ele não gira corretamente. coloquei + para dar uma volta no sentido antihorario
-                        x = j - k * cos(PI/180.0*t); // formula dada, achando coordenadas (x,y) 
+                        y = i + k * sin(t*PI/180.0); // formula do pdf errada? com o i- k*senos[t] ele não gira corretamente. coloquei + para dar uma volta no sentido antihorario
+                        x = j - k * cos(t*PI/180.0); // formula dada, achando coordenadas (x,y) 
                         A[dim+(y*largura)+x]++; // espaço de hugh
                     }
                 }
@@ -118,10 +118,10 @@ pont_imagem segmentacao(pont_imagem Imagem, centro *c){
         raioimagem=-100;
     }
    else if(Imagemsegmentada->largura == 610){
-    raioimagem=-20;
+    raioimagem=-25;
    }
    else if(Imagemsegmentada->largura == 1198){
-    raioimagem=-5;
+    raioimagem=25;
    }
    printf("%i\n",raioimagem);
     for(i = 0; i < Imagem->altura; i++){
@@ -301,8 +301,10 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
 void novaimagem(pont_imagem Imagem){/*Função para criar a imagem em tons de cinza*/
     FILE *imagem;
     int i, j;
+    unsigned short int count=0;
+    count++;
     char novonome[250];
-    printf("Digite o novo nome para imagem em cinza: ");
+    printf("Digite o nome para imagem segmentada:");
     scanf("%s", novonome);
     imagem=fopen(novonome,"w");// abre em modo escrita
     fprintf(imagem,"%s\n",Imagem->codigo);/*escreve o cabeçalho da imagem*/
@@ -337,42 +339,78 @@ pont_imagem transformarcinza(pont_imagem Imagem){
     }
     return Imagemcinza;
 }
-double pixels_comprometidos(pont_imagem Imagem) {
+double porcentagem(pont_imagem Imagem) {
     unsigned short int i,j;
-    double count_total = 0,count = 0;
+    double qtdpixel = 0,qtdpixelafetado = 0,porcentagemfinal;
     for (i=0; i < Imagem->altura; i++) {
-        for (j=(int)Imagem->largura/4; j < Imagem->largura; j++) {
+        for (j=Imagem->largura/4; j < Imagem->largura; j++) { // largura/4 por causa do raio minimo
             if (Imagem->pixelimagem[i][j].r >= 0) {
-                count_total++;//Cada pixel existente na pupila (ou seja, o total)
-                if (Imagem->pixelimagem[i][j].r > 90) {
-                    count++;//Cada pixel que corresponde a pixel de catarata
+                qtdpixel++;//quantos pixels tem na pupila
+                if (Imagem->pixelimagem[i][j].r > 60 && Imagem->pixelimagem[i][j].r <=255) {
+                    qtdpixelafetado++;//quantos pixels possui catarata
                 }
             }
         }
     }
 
-    double porcento = (double) (count*100)/count_total;
-    return porcento;
+    porcentagemfinal = 100*(qtdpixelafetado/qtdpixel);
+    return porcentagemfinal;
 }
-void ndiagnostico(double percentCatarata) {
-    char new_diagnostico[17]="diagnostico.txt";
-    FILE *arquivo = fopen(new_diagnostico, "w");
-
+void ndiagnostico(double porcentagemfinal) {
+    char diagnostico[17]="diagnostico.txt";
+    FILE *arquivo = fopen(diagnostico, "w");
     if (arquivo == NULL) {
         fprintf(stderr, "ERR4R: Erro na criacao do arquivo com diagnostico\n");
         exit(1);
     }
-    if (percentCatarata >= 65) {
-        fprintf(arquivo, "Situação do indivíduo: com catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\nFim do diagnóstico.",percentCatarata);
+    if (porcentagemfinal >= 65) {
+        fprintf(arquivo, "Situação do indivíduo: com catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\nFim do diagnóstico.",porcentagemfinal);
     }
     else {
-        fprintf(arquivo, "Situação do indivíduo: sem catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\nFim do diagnóstico.", percentCatarata);
+        fprintf(arquivo, "Situação do indivíduo: sem catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\nFim do diagnóstico.", porcentagemfinal);
     }
 
     fclose(arquivo);
 }
+void marcarpupila(pont_imagem Imagem, centro *c) {
+    unsigned int t;
+    int x, y;
+    unsigned short int i,j;
+    short int raioimagem;
+    for (t = 0; t < 360; t++) {
+        x = c->r*cos(t*(PI/180.0)); // baseado na transformada, pegar o contorno
+        y = c->r*sin(t*(PI/180.0));
+        Imagem->pixelimagem[c->y+y][c->x+x].r = 255; // centro da pupila + coordenada do contorno, totalizando o pixel exato do contorno
+        Imagem->pixelimagem[c->y+y][c->x+x].g = 0;// marca o contorno de verde
+        Imagem->pixelimagem[c->y+y][c->x+x].b = 0;
+
+    }
+    if(Imagem->largura == 1167){
+        raioimagem=20;
+    }
+    else if (Imagem->largura==1015){
+        raioimagem=-100;
+    }
+   else if(Imagem->largura == 610){
+    raioimagem=-25;
+   }
+   else if(Imagem->largura == 1198){
+    raioimagem=-5;
+   }
+    for(i = 0; i < Imagem->altura; i++){
+        for(j = 0; j < Imagem->largura; j++){
+            if(sqrt((i-c->y)*(i-c->y)+(j-c->x)*(j-c->x)) == c->r+raioimagem){ // ajuste manual do raio... ???
+                Imagem->pixelimagem[i][j].r == 255;
+                Imagem->pixelimagem[i][j].g == 0;
+                Imagem->pixelimagem[i][j].b == 0;
+            }
+        }
+    }
+}
 int main()
 {   
+    char resposta;
+    int a;
     imagem Imagem;
     pont_imagem Imagemcinza;
     lerimagem(&Imagem);
@@ -391,8 +429,10 @@ int main()
 
     pont_imagem Imagemsegmentada;
     Imagemsegmentada=segmentacao(Imagemcinza, c);
-    double percentCatarata = pixels_comprometidos(Imagemsegmentada);
-    ndiagnostico(percentCatarata);
+    double porcentagemfinal = porcentagem(Imagemsegmentada);
+    ndiagnostico(porcentagemfinal);
+    //marcarpupila(&Imagem,c);
+    //novaimagem(&Imagem);
     novaimagem(Imagemsegmentada);
   return 0;
 }
