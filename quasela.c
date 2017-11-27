@@ -123,7 +123,6 @@ pont_imagem segmentacao(pont_imagem Imagem, centro *c){
    else if(Imagemsegmentada->largura == 1198){
     raioimagem=25;
    }
-   printf("%i\n",raioimagem);
     for(i = 0; i < Imagem->altura; i++){
         for(j = 0; j < Imagem->largura; j++){
         if(sqrt((i-c->y)*(i-c->y)+(j-c->x)*(j-c->x)) < c->r+raioimagem){ // ajuste manual do raio... ???
@@ -131,9 +130,9 @@ pont_imagem segmentacao(pont_imagem Imagem, centro *c){
             Imagemsegmentada->pixelimagem[i][j].g = Imagem->pixelimagem[i][j].g;
             Imagemsegmentada->pixelimagem[i][j].b = Imagem->pixelimagem[i][j].b;
         }else{
-            Imagemsegmentada->pixelimagem[i][j].r = 256;
-            Imagemsegmentada->pixelimagem[i][j].g = 256;
-            Imagemsegmentada->pixelimagem[i][j].b = 256;
+            Imagemsegmentada->pixelimagem[i][j].r = 0;
+            Imagemsegmentada->pixelimagem[i][j].g = 0;
+            Imagemsegmentada->pixelimagem[i][j].b = 0;
             }
         }
     }
@@ -195,7 +194,6 @@ pont_imagem binarizacao(pont_imagem Imagem){
     else if(Imagembin->largura == 1198){
         threshold=21;
     }
-    printf("%i\n",threshold );
     criarmatriz(Imagembin);
     for(i = 0; i < Imagem->altura; i++){
         for(j = 0; j < Imagem->largura; j++){
@@ -269,7 +267,7 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
     strcpy(Imagem->codigo,temp);
 
     while(1){
-    fgets(temp,99,imagem);
+    fgets(temp,99,imagem);   
         if(temp[0]=='#'){
             strcpy(aux,temp);
         }else{
@@ -346,7 +344,7 @@ double porcentagem(pont_imagem Imagem) {
         for (j=Imagem->largura/4; j < Imagem->largura; j++) { // largura/4 por causa do raio minimo
             if (Imagem->pixelimagem[i][j].r >= 0) {
                 qtdpixel++;//quantos pixels tem na pupila
-                if (Imagem->pixelimagem[i][j].r > 60 && Imagem->pixelimagem[i][j].r <=255) {
+                if (Imagem->pixelimagem[i][j].r > 90 ) {
                     qtdpixelafetado++;//quantos pixels possui catarata
                 }
             }
@@ -360,31 +358,20 @@ void ndiagnostico(double porcentagemfinal) {
     char diagnostico[17]="diagnostico.txt";
     FILE *arquivo = fopen(diagnostico, "w");
     if (arquivo == NULL) {
-        fprintf(stderr, "ERR4R: Erro na criacao do arquivo com diagnostico\n");
+        fprintf(stderr, "ERR4R: Erro na criacao do arquivo diagnostico\n");
         exit(1);
     }
     if (porcentagemfinal >= 65) {
-        fprintf(arquivo, "Situação do indivíduo: com catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\nFim do diagnóstico.",porcentagemfinal);
+        fprintf(arquivo, "Indivíduo com catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\n",porcentagemfinal);
     }
     else {
-        fprintf(arquivo, "Situação do indivíduo: sem catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\nFim do diagnóstico.", porcentagemfinal);
+        fprintf(arquivo, "Indivíduo sem catarata\nPorcentagem de comprometimento da pupila: %.2lf%%\n", porcentagemfinal);
     }
 
     fclose(arquivo);
 }
 void marcarpupila(pont_imagem Imagem, centro *c) {
-    unsigned int t;
-    int x, y;
-    unsigned short int i,j;
-    short int raioimagem;
-    for (t = 0; t < 360; t++) {
-        x = c->r*cos(t*(PI/180.0)); // baseado na transformada, pegar o contorno
-        y = c->r*sin(t*(PI/180.0));
-        Imagem->pixelimagem[c->y+y][c->x+x].r = 255; // centro da pupila + coordenada do contorno, totalizando o pixel exato do contorno
-        Imagem->pixelimagem[c->y+y][c->x+x].g = 0;// marca o contorno de verde
-        Imagem->pixelimagem[c->y+y][c->x+x].b = 0;
-
-    }
+    int i,j,raioimagem;
     if(Imagem->largura == 1167){
         raioimagem=20;
     }
@@ -395,14 +382,14 @@ void marcarpupila(pont_imagem Imagem, centro *c) {
     raioimagem=-25;
    }
    else if(Imagem->largura == 1198){
-    raioimagem=-5;
+    raioimagem=25;
    }
     for(i = 0; i < Imagem->altura; i++){
         for(j = 0; j < Imagem->largura; j++){
             if(sqrt((i-c->y)*(i-c->y)+(j-c->x)*(j-c->x)) == c->r+raioimagem){ // ajuste manual do raio... ???
-                Imagem->pixelimagem[i][j].r == 255;
-                Imagem->pixelimagem[i][j].g == 0;
-                Imagem->pixelimagem[i][j].b == 0;
+                 Imagem->pixelimagem[i][j].r=255;
+                 Imagem->pixelimagem[i][j].g=0;
+                Imagem->pixelimagem[i][j].b=0;
             }
         }
     }
@@ -431,8 +418,8 @@ int main()
     Imagemsegmentada=segmentacao(Imagemcinza, c);
     double porcentagemfinal = porcentagem(Imagemsegmentada);
     ndiagnostico(porcentagemfinal);
-    //marcarpupila(&Imagem,c);
-    //novaimagem(&Imagem);
+   // marcarpupila(&Imagem,c);
+    // novaimagem(&Imagem);
     novaimagem(Imagemsegmentada);
   return 0;
 }
