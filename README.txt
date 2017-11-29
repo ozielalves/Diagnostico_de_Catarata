@@ -10,3 +10,6 @@ Funcionalidas Extras:
 
 Para compilar:
 Digite no terminal: gcc main.c funcoes.c -o catarata -W -lm
+
+Para executar:
+Digite no terminal: ./catarata -i Catarata.ppm -f ppm -o diagnostico.txt 
