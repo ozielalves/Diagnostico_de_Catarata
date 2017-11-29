@@ -134,6 +134,10 @@ pont_imagem filtrosobel(pont_imagem Imagem){
     const char sobelx[3][3] = {{ 1, 0, -1},{ 2, 0, -2},{1,0,-1}};//filtros
     const char sobely[3][3] = {{1, 2, 1},{0, 0, 0},{-1, -2, -1}};
     pont_imagem Imagemsobel = calloc(1,sizeof(imagem));
+    if(Imagemsobel==NULL){
+	fprintf(stderr, "Erro ao alocar memoria para imagem com o filtro de sobel.");
+	return NULL;
+    }
     strcpy(Imagemsobel->codigo,Imagem->codigo);
     Imagemsobel->altura = Imagem->altura;
     Imagemsobel->largura = Imagem->largura;
@@ -311,6 +315,9 @@ void novaimagem(pont_imagem Imagem, unsigned short int a){/*Função para criar 
 	}
     scanf("%s", novonome);
     imagem=fopen(novonome,"w");// abre em modo escrita
+    if (imagem == NULL){
+        fprintf(stderr, "Erro ao tentar gerar a imagem. NULL.\n");
+    }
     fprintf(imagem,"%s\n",Imagem->codigo);/*escreve o cabeçalho da imagem.*/
     fprintf(imagem,"%i ",Imagem->largura);
     fprintf(imagem,"%i\n",Imagem->altura);
