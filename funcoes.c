@@ -41,7 +41,6 @@ centro *hough(pont_imagem Imagem){
             }
         }
     }
-
     for(i = raiomaximopupila; i < altura-raiomaximopupila; i++){
         for(j = raiomaximopupila; j < largura-raiomaximopupila; j++){
             for(k = raiominimoiris; k <= raiomaximopupila; k++){
