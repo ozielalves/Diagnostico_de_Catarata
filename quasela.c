@@ -296,13 +296,18 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
     }
     fclose(imagem);
 } 
-void novaimagem(pont_imagem Imagem){/*Função para criar a imagem em tons de cinza*/
+void novaimagem(pont_imagem Imagem, unsigned short int a){/*Função para criar a imagem em tons de cinza*/
     FILE *imagem;
     int i, j;
     unsigned short int count=0;
     count++;
     char novonome[250];
-    printf("Digite o nome para imagem segmentada:");
+    if(a==0){
+   		printf("Digite o nome para imagem marcada:");
+	}
+	else{
+		printf("Digite o nome para imagem segmentada:");
+	}
     scanf("%s", novonome);
     imagem=fopen(novonome,"w");// abre em modo escrita
     fprintf(imagem,"%s\n",Imagem->codigo);/*escreve o cabeçalho da imagem*/
@@ -382,25 +387,32 @@ void marcarpupila(pont_imagem Imagem, centro *c) {
     raioimagem=-25;
    }
    else if(Imagem->largura == 1198){
-    raioimagem=25;
+    raioimagem=40;
    }
-    for(i = 0; i < Imagem->altura; i++){
-        for(j = 0; j < Imagem->largura; j++){
-            if(sqrt((i-c->y)*(i-c->y)+(j-c->x)*(j-c->x)) == c->r+raioimagem){ // ajuste manual do raio... ???
-                 Imagem->pixelimagem[i][j].r=255;
-                 Imagem->pixelimagem[i][j].g=0;
-                Imagem->pixelimagem[i][j].b=0;
-            }
-        }
-    }
+    unsigned int t;
+	int x, y;
+	
+	//Percorre a circunferencia de centro igual ao passado por parametro
+	for (t = 0; t < 360; t++) {
+		//Calcula as coordenadas atraves do raio (incluso na passagem por parametro do Centro)
+		y = (c->r+raioimagem)*sin(t*PI/180.0);
+		x = (c->r+raioimagem)*cos(t*PI/180.0);
+
+		//Marca em magenta as coordenadas no raio
+		Imagem->pixelimagem[c->y+y][c->x+x].r = 0;
+		Imagem->pixelimagem[c->y+y][c->x+x].g = 255;
+		Imagem->pixelimagem[c->y+y][c->x+x].b = 0;
+	}
 }
 int main()
 {   
-    char resposta;
-    int a;
+    char resposta[7];
+    int a=0,b=1;
     imagem Imagem;
-    pont_imagem Imagemcinza;
     lerimagem(&Imagem);
+
+
+    pont_imagem Imagemcinza;
     Imagemcinza = transformarcinza(&Imagem);
 
     pont_imagem Imagemgauss;
@@ -408,7 +420,7 @@ int main()
 
     pont_imagem Imagemsobel;
     Imagemsobel=filtrosobel(Imagemgauss);
-    
+
     pont_imagem Imagembin;
     Imagembin=binarizacao(Imagemsobel);
 
@@ -416,10 +428,17 @@ int main()
 
     pont_imagem Imagemsegmentada;
     Imagemsegmentada=segmentacao(Imagemcinza, c);
+
     double porcentagemfinal = porcentagem(Imagemsegmentada);
     ndiagnostico(porcentagemfinal);
-   // marcarpupila(&Imagem,c);
-    // novaimagem(&Imagem);
-    novaimagem(Imagemsegmentada);
+
+    printf("Deseja gerar imagem com pupila marcada?(sim/nao): ");
+    scanf("%s",resposta);
+    if(strcmp(resposta,"sim")==0){
+    	marcarpupila(&Imagem,c);
+    	novaimagem(&Imagem,a);
+    }
+
+    novaimagem(Imagemsegmentada,b);
   return 0;
 }
