@@ -8,7 +8,7 @@ void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem receben
     }
 }
 void limparimagem(pont_imagem Imagem) {
-    unsigned int i;
+    int i;
     for (i=0; i < Imagem->altura; ++i) {
         free(Imagem->pixelimagem[i]);
     }
@@ -326,7 +326,7 @@ double porcentagem(pont_imagem Imagem) {
         for (j=Imagem->largura/4; j < Imagem->largura; j++) { // largura/4 por causa do raio minimo
             if (Imagem->pixelimagem[i][j].r >= 0) {
                 qtdpixel++;//quantos pixels tem na pupila
-                if (Imagem->pixelimagem[i][j].r > 90 ) {
+                if (Imagem->pixelimagem[i][j].r > 75 ) {
                     qtdpixelafetado++;//quantos pixels possui catarata
                 }
             }
@@ -364,7 +364,7 @@ void marcarpupila(pont_imagem Imagem, centro *c) {
     raioimagem=-25;
    }
    else if(Imagem->largura == 1198){
-    raioimagem=40;
+    raioimagem=25; //40
    }
     unsigned int t;
 	int x, y;
@@ -380,4 +380,37 @@ void marcarpupila(pont_imagem Imagem, centro *c) {
 		Imagem->pixelimagem[c->y+y][c->x+x].g = 255;
 		Imagem->pixelimagem[c->y+y][c->x+x].b = 0;
 	}
+}
+pont_imagem flash(pont_imagem Imagem){
+    pont_imagem Imagemsflash = calloc(1,sizeof(imagem));
+    strcpy(Imagemsflash->codigo,Imagem->codigo);
+    Imagemsflash->altura = Imagem->altura;
+    Imagemsflash->largura = Imagem->largura;
+    Imagemsflash->max=Imagem->max;
+    criarmatriz(Imagemsflash);
+    unsigned short int i,j,media;
+    int soma,total;
+    for(i = 0; i < Imagem->altura; i++){
+        for(j = 0; j < Imagem->largura; j++){
+            if(Imagem->pixelimagem[i][j].r > 0){
+                soma+=Imagem->pixelimagem[i][j].r;
+                total++;
+            }
+        }
+    }
+    media=(int)soma/total;
+    for(i = 0; i < Imagem->altura; i++){
+        for(j = 0; j < Imagem->largura; j++){
+            if(Imagem->pixelimagem[i][j].r < 140){
+                Imagemsflash->pixelimagem[i][j].r = Imagem->pixelimagem[i][j].r;
+                Imagemsflash->pixelimagem[i][j].g = Imagem->pixelimagem[i][j].g;
+                Imagemsflash->pixelimagem[i][j].b = Imagem->pixelimagem[i][j].b;
+            }else{
+                Imagemsflash->pixelimagem[i][j].r = media;
+                Imagemsflash->pixelimagem[i][j].g = media;
+                Imagemsflash->pixelimagem[i][j].b = media;
+            }
+        }
+    }
+    return Imagemsflash;
 }
