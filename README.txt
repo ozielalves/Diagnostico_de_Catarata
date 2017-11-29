@@ -7,3 +7,6 @@ Funcionalidas Extras:
 1. Imagem em RGB com contorno da pupila; 
 2. O progama ignora os comentarios em toda a leitura;
 3. Free em imagens, otimizando a memória e funcionamento.
+
+Para compilar:
+Digite no terminal: gcc main.c funcoes.c -o catarata -W -lm
