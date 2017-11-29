@@ -221,33 +221,27 @@ pont_imagem filtrogaussiano(pont_imagem Imagem){
     }
     return Imagemgauss;
 }
-void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
-    FILE *imagem;// ponteiro que aponta pro arquivo
+pont_imagem lerimagem(FILE *imagem){/*Lê a imagem do usuário*/
     int i, j;
     char nomeimagem[250],aux[100];
-    char temp[100],temp1[5],temp2[5];
-    printf("Digite o nome da imagem: ");
-    scanf("%s", nomeimagem);
-    imagem=fopen(nomeimagem, "r");// abre em modo leitura
-        if(imagem == NULL){
-            printf("Houve um erro ao abrir a imagem\n");
-            exit(1);
-        }
-
+    char temp[100];
+    int temp1,temp2;
+    pont_imagem Imagem;
+    Imagem=malloc(sizeof(imagem));
     while(1){
-    fgets(temp,99,imagem);
+        fscanf(imagem,"%s",temp);
         if(temp[0]=='#'){
-            strcpy(aux,temp);
+            fgets(aux,99,imagem);
         }else {
             break;
         }
-      if(strcmp(temp,"P3")!=0){ // Verifica se é PPM(incompleto)
-            printf("Imagem nao eh PPM\n");
-            exit(1);
-        }
     }
-    strcpy(Imagem->codigo,temp);
-
+    if(strcmp(temp,"P3")!=0){ // Verifica se é PPM(incompleto)
+        printf("Imagem nao eh PPM\n");
+        exit(1);
+    }
+    strncpy(Imagem->codigo,temp,2);
+    fgetc(imagem);
     while(1){
     fgets(temp,99,imagem);   
         if(temp[0]=='#'){
@@ -256,9 +250,9 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
             break;
         }
     }
-    sscanf(temp,"%s %s",temp1,temp2);
-    Imagem->largura=atoi(temp1);
-    Imagem->altura=atoi(temp2);
+    sscanf(temp,"%d %d",&temp1,&temp2);
+    Imagem->largura=(temp1);
+    Imagem->altura=(temp2);
     criarmatriz(Imagem);
     while(1){
     fgets(temp,99,imagem);
@@ -277,7 +271,8 @@ void lerimagem(pont_imagem Imagem){/*Lê a imagem do usuário*/
         }
     }
     fclose(imagem);
-} 
+    return Imagem;
+}
 void novaimagem(pont_imagem Imagem, unsigned short int a){/*Função para criar a imagem em tons de cinza*/
     FILE *imagem;
     int i, j;
@@ -345,7 +340,7 @@ void ndiagnostico(double porcentagemfinal) {
     char diagnostico[17]="diagnostico.txt";
     FILE *arquivo = fopen(diagnostico, "w");
     if (arquivo == NULL) {
-        fprintf(stderr, "ERR4R: Erro na criacao do arquivo diagnostico\n");
+        fprintf(stderr, "Erro na criacao do arquivo diagnostico\n");
         exit(1);
     }
     if (porcentagemfinal >= 65) {
