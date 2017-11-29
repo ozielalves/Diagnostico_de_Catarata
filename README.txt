@@ -7,6 +7,8 @@ Funcionalidas Extras:
 1. Imagem em RGB com contorno da pupila; 
 2. O progama ignora os comentarios em toda a leitura;
 3. Free em imagens, otimizando a memória e funcionamento.
+4. Segmentação do flash, gerando a imagem SEM o flash(gerando uma maior precisão no diagnóstico).
+5. Opção na criação das imagens em cada etapa.
 
 Para compilar:
 Digite no terminal: gcc main.c funcoes.c -o catarata -W -lm
