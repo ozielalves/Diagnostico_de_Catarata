@@ -1,3 +1,5 @@
+#include "funcoes.h"
+#include "structs.h"
 void criarmatriz(pont_imagem Imagem){ /*Prepara os pixels da nova imagem recebendo a altura e largura da imagem original*/
     int i;
     Imagem->pixelimagem = (pixel**)malloc(Imagem->altura * sizeof(pixel*));
