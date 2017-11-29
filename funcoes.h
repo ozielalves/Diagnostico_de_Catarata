@@ -17,7 +17,7 @@ pont_imagem binarizacao(pont_imagem Imagem);
 /*Função que aplica o filtro gaussiano, para eliminar ruidos, deixando a imagem mais "suave" para ser trabalhada no sobel.*/
 pont_imagem filtrogaussiano(pont_imagem Imagem);
 /*Usada  para fazer a leitura da imagem.*/
-void lerimagem(pont_imagem Imagem);
+pont_imagem lerimagem(FILE *imagem);
 /*Usada para criar uma nova imagem.*/
 void novaimagem(pont_imagem Imagem, unsigned short int a);
 /*Função para transformar a imagem em tons de cinza, baseada no método de combinação linear.*/
@@ -28,4 +28,5 @@ double porcentagem(pont_imagem Imagem);
 void ndiagnostico(double porcentagemfinal);
 /*Função para marcar o contorno da pupila em RGB.*/
 void marcarpupila(pont_imagem Imagem, centro *c);
+pont_imagem flash(pont_imagem Imagem);
 #endif
