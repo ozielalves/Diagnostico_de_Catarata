@@ -22,6 +22,7 @@ Funcionalidas Extras:
 4. Segmentação do flash.
 5. Opção de gerar a imagem com o flash borrado(obtendo uma maior precisão no diagnóstico).
 6. Opção na criação das imagens em cada etapa.
+7. Opção na escolha do nome do diagnostico.
 
 
 Para compilar:
